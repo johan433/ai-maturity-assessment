@@ -78,12 +78,12 @@ body {
   margin-bottom: 16px;
 }
 .header-logos img {
-  height: 36px;
+  height: 72px;
   width: auto;
   object-fit: contain;
   background: white;
-  padding: 6px 14px;
-  border-radius: 8px;
+  padding: 10px 20px;
+  border-radius: 10px;
 }
 
 /* Nav */
