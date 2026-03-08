@@ -413,3 +413,12 @@ input:focus, select:focus { outline: none; border-color: var(--blue); box-shadow
 .mb-8 { margin-bottom: 8px; }
 .mb-16 { margin-bottom: 16px; }
 .hidden { display: none !important; }
+
+/* Print / PDF styles */
+@media print {
+  .header { padding: 16px; }
+  #reportActions, .ai-placeholder, .nav { display: none !important; }
+  .card, .strength-card, .growth-card { break-inside: avoid; }
+  body { background: white; }
+  .container { max-width: 100%; }
+}
