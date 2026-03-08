@@ -168,10 +168,10 @@
         ? reportData.respondentName.replace(/[^a-zA-Z0-9äöüÄÖÜß\s-]/g, '').replace(/\s+/g, '_')
         : 'Bericht';
 
-      // --- Build a dedicated off-screen PDF container ---
+      // --- Build a dedicated PDF container (overlaid on page during capture) ---
       const pdfRoot = document.createElement('div');
       pdfRoot.id = 'pdfCapture';
-      pdfRoot.style.cssText = 'position:absolute;left:-9999px;top:0;width:800px;background:white;font-family:Source Sans 3,sans-serif;color:#231f20;';
+      pdfRoot.style.cssText = 'position:fixed;left:0;top:0;width:800px;background:white;z-index:99999;font-family:Source Sans 3,sans-serif;color:#231f20;padding:0;';
 
       // 1) PDF Header with logos
       const sessionLabel = document.getElementById('sessionLabel').textContent || '';
@@ -234,12 +234,7 @@
           scale: 2,
           useCORS: true,
           logging: false,
-          width: 800,
-          windowWidth: 800,
-          scrollY: 0,
-          scrollX: 0,
-          x: 0,
-          y: 0
+          windowWidth: 800
         },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak:    { mode: ['css', 'legacy'], avoid: ['.card', '.strength-card', '.growth-card', '.report-header', 'tr'] }
