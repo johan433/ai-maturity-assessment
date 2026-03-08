@@ -418,7 +418,28 @@ input:focus, select:focus { outline: none; border-color: var(--blue); box-shadow
 @media print {
   .header { padding: 16px; }
   #reportActions, .ai-placeholder, .nav { display: none !important; }
-  .card, .strength-card, .growth-card { break-inside: avoid; }
+  .card, .strength-card, .growth-card { break-inside: avoid; page-break-inside: avoid; }
   body { background: white; }
   .container { max-width: 100%; }
 }
+
+/* PDF capture container */
+#pdfCapture .card,
+#pdfCapture .strength-card,
+#pdfCapture .growth-card,
+#pdfCapture .report-header {
+  page-break-inside: avoid;
+  break-inside: avoid;
+  margin-bottom: 12px;
+}
+#pdfCapture .report-section-title {
+  page-break-after: avoid;
+  break-after: avoid;
+}
+#pdfCapture .report-radar {
+  max-height: 400px;
+  text-align: center;
+}
+#pdfCapture table { font-size: 0.85rem; }
+#pdfCapture .score-table th,
+#pdfCapture .score-table td { padding: 8px 10px; }
