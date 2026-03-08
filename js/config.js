@@ -163,7 +163,7 @@ async function getSession(code) {
 
 async function submitResponse(sessionCode, respondentName, email, path, answers) {
   const score = calculateMaturityScore(answers, path);
-  await db.collection(RESPONSES_COLLECTION).add({
+  const docRef = await db.collection(RESPONSES_COLLECTION).add({
     sessionCode: sessionCode.toUpperCase(),
     respondentName,
     email: email || '',
@@ -173,6 +173,7 @@ async function submitResponse(sessionCode, respondentName, email, path, answers)
     maturityScore: parseFloat(score),
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   });
+  return docRef.id;
 }
 
 async function getResponses(sessionCode) {

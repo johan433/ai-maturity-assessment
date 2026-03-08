@@ -69,7 +69,8 @@
         <p style="color:var(--text-secondary);margin-bottom:8px;">Ihr Assessment wurde erfolgreich eingereicht.</p>
         <div id="completionBadge" style="margin:24px 0;"></div>
         <div id="completionScore" style="margin-bottom:24px;"></div>
-        <a href="index.html" class="btn btn-blue">Zurück zur Startseite</a>
+        <div id="completionReport" style="margin-bottom:16px;"></div>
+        <a href="index.html" class="btn btn-outline">Zurück zur Startseite</a>
       </div>
     </div>
 
@@ -385,8 +386,8 @@
       const email = document.getElementById('respondentEmail').value.trim();
 
       try {
-        await submitResponse(sessionCode, name, email, selectedPath, answers);
-        showCompletion();
+        const docId = await submitResponse(sessionCode, name, email, selectedPath, answers);
+        showCompletion(docId);
       } catch (err) {
         const e = document.getElementById('submitError');
         e.textContent = 'Fehler beim Einreichen: ' + err.message;
@@ -394,7 +395,7 @@
       }
     }
 
-    function showCompletion() {
+    function showCompletion(docId) {
       document.getElementById('step-questions').classList.add('hidden');
       document.getElementById('step-complete').classList.remove('hidden');
 
@@ -410,6 +411,11 @@
           <div class="score-value">${score}</div>
           <div class="score-label">Gesamtscore (1–5)</div>
         </div>`;
+
+      if (docId) {
+        document.getElementById('completionReport').innerHTML =
+          `<a class="btn btn-blue" href="report.html?session=${sessionCode}&id=${docId}">📄 Individuellen Bericht anzeigen</a>`;
+      }
     }
   </script>
 </body>
