@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session erstellen — KI-Reifegrad-Assessment</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <div class="header">
+    <div class="logo-text">Praelexis</div>
+    <h1>KI-Reifegrad-Assessment</h1>
+    <p>Neue Sitzung erstellen</p>
+  </div>
+
+  <div class="container">
+    <nav class="nav">
+      <a href="index.html">Start</a>
+      <a href="create-session.html" class="active">Session erstellen</a>
+      <a href="admin.html">Admin</a>
+    </nav>
+
+    <!-- Login -->
+    <div id="loginSection">
+      <div class="card card-accent">
+        <div class="card-header">Admin-Zugang</div>
+        <div class="form-group">
+          <label for="adminPassword">Passwort</label>
+          <input type="password" id="adminPassword" placeholder="Admin-Passwort eingeben">
+        </div>
+        <div id="loginError" class="message message-error"></div>
+        <button class="btn btn-primary btn-full" onclick="doLogin()">Anmelden</button>
+      </div>
+    </div>
+
+    <!-- Create Session Form -->
+    <div id="createSection" class="hidden">
+      <div class="card card-accent">
+        <div class="card-header">Neue Assessment-Sitzung</div>
+        <div class="form-group">
+          <label for="sessionName">Sitzungsname *</label>
+          <input type="text" id="sessionName" placeholder="z.B. KI-Reifegrad Q1 2026">
+        </div>
+        <div class="form-group">
+          <label for="sessionOrg">Organisation *</label>
+          <input type="text" id="sessionOrg" placeholder="z.B. Praelexis GmbH">
+        </div>
+        <div id="createError" class="message message-error"></div>
+        <button class="btn btn-primary btn-full" onclick="doCreateSession()">Session erstellen</button>
+      </div>
+
+      <!-- Success -->
+      <div id="successCard" class="hidden">
+        <div class="card card-blue">
+          <div class="card-header" style="color:var(--success);">✅ Session erfolgreich erstellt!</div>
+          <div class="code-display">
+            <div class="code-label">Sitzungscode</div>
+            <div class="code" id="newCode"></div>
+          </div>
+          <p style="text-align:center;font-size:0.9rem;color:var(--text-secondary);margin-bottom:16px;">
+            Teilen Sie diesen Code mit den Teilnehmern.
+          </p>
+          <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+            <button class="btn btn-blue" onclick="copyLink()">Link kopieren</button>
+            <a class="btn btn-outline" href="admin.html">Zum Dashboard</a>
+          </div>
+          <div id="copyMsg" class="message message-success mt-16"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+  <script src="js/questions.js"></script>
+  <script src="js/config.js"></script>
+  <script>
+    // Check if already logged in
+    if (checkAdmin()) {
+      document.getElementById('loginSection').classList.add('hidden');
+      document.getElementById('createSection').classList.remove('hidden');
+    }
+
+    document.getElementById('adminPassword').addEventListener('keydown', e => {
+      if (e.key === 'Enter') doLogin();
+    });
+
+    function doLogin() {
+      const pw = document.getElementById('adminPassword').value;
+      if (loginAdmin(pw)) {
+        document.getElementById('loginSection').classList.add('hidden');
+        document.getElementById('createSection').classList.remove('hidden');
+      } else {
+        const e = document.getElementById('loginError');
+        e.textContent = 'Falsches Passwort.';
+        e.style.display = 'block';
+      }
+    }
+
+    let createdCode = '';
+
+    async function doCreateSession() {
+      const name = document.getElementById('sessionName').value.trim();
+      const org = document.getElementById('sessionOrg').value.trim();
+      const errDiv = document.getElementById('createError');
+      errDiv.style.display = 'none';
+
+      if (!name || !org) {
+        errDiv.textContent = 'Bitte füllen Sie alle Felder aus.';
+        errDiv.style.display = 'block';
+        return;
+      }
+
+      try {
+        createdCode = await createSession(name, org);
+        document.getElementById('newCode').textContent = createdCode;
+        document.getElementById('successCard').classList.remove('hidden');
+      } catch (err) {
+        errDiv.textContent = 'Fehler: ' + err.message;
+        errDiv.style.display = 'block';
+      }
+    }
+
+    function copyLink() {
+      const url = `${window.location.origin}${window.location.pathname.replace('create-session.html', 'assessment.html')}?session=${createdCode}`;
+      navigator.clipboard.writeText(url).then(() => {
+        const m = document.getElementById('copyMsg');
+        m.textContent = 'Link in die Zwischenablage kopiert!';
+        m.style.display = 'block';
+        setTimeout(() => m.style.display = 'none', 3000);
+      });
+    }
+  </script>
+</body>
+</html>
