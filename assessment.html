@@ -119,8 +119,8 @@
       const container = document.getElementById('routing-options');
       container.innerHTML = ROUTING_QUESTION.options.map((opt, i) => `
         <div class="routing-option" onclick="selectRouting('${opt.value}', this)">
-          <input type="radio" name="routing" value="${opt.value}" id="route_${i}">
-          <label for="route_${i}">${opt.label}</label>
+          <input type="radio" name="routing" value="${opt.value}" style="pointer-events:none;">
+          <label>${opt.label}</label>
         </div>
       `).join('');
     }
