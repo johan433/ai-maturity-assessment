@@ -207,8 +207,8 @@
       return `<div class="option-group">
         ${q.options.map((opt, i) => `
           <div class="option-item" onclick="selectSingle('${q.id}', '${opt.value}', this)">
-            <input type="radio" name="${q.id}" value="${opt.value}" id="${q.id}_${i}">
-            <label for="${q.id}_${i}">${opt.label}</label>
+            <input type="radio" name="${q.id}" value="${opt.value}" style="pointer-events:none;">
+            <label>${opt.label}</label>
           </div>
         `).join('')}
       </div>`;
@@ -218,8 +218,8 @@
       return `<div class="option-group">
         ${q.options.map((opt, i) => `
           <div class="option-item" onclick="toggleMulti('${q.id}', '${opt.value}', this, event)">
-            <input type="checkbox" value="${opt.value}" id="${q.id}_${i}">
-            <label for="${q.id}_${i}">
+            <input type="checkbox" value="${opt.value}" style="pointer-events:none;">
+            <label>
               ${opt.label}
               ${opt.hasTextInput ? `<input type="text" class="other-input" id="${q.id}_other_text"
                 placeholder="Bitte angeben..." onclick="event.stopPropagation()"
