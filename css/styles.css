@@ -294,6 +294,102 @@ input:focus, select:focus { outline: none; border-color: var(--blue); box-shadow
   .session-actions { justify-content: flex-start; }
 }
 
+/* ===================== */
+/* Individual Report     */
+/* ===================== */
+
+/* Report header */
+.report-header {
+  background: var(--card); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 24px 28px; margin-bottom: 20px;
+  border-left: 4px solid var(--blue);
+}
+
+/* Gauge (horizontal score bar) */
+.gauge-container {
+  width: 100%; height: 10px; background: var(--grey-light);
+  border-radius: 5px; overflow: hidden;
+}
+.gauge-fill {
+  height: 100%; border-radius: 5px;
+  transition: width 0.6s ease;
+}
+
+/* Peer comparison */
+.peer-comparison { margin-top: 12px; }
+.peer-row {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
+}
+.peer-label {
+  font-size: 0.85rem; font-weight: 500; color: var(--text-secondary);
+  min-width: 160px; flex-shrink: 0;
+}
+.peer-value {
+  font-size: 1rem; font-weight: 600; min-width: 40px; text-align: right;
+}
+
+/* Strength & Growth Cards */
+.strength-card, .growth-card {
+  background: var(--card); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 20px 24px; margin-bottom: 12px;
+}
+.strength-card { border-left: 4px solid var(--success); }
+.growth-card { border-left: 4px solid var(--orange); }
+
+.dimension-card-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 4px;
+}
+.dimension-label { font-weight: 600; font-size: 0.95rem; color: var(--text); }
+.dimension-score { font-weight: 700; font-size: 0.95rem; }
+.dimension-interp {
+  font-size: 0.85rem; color: var(--text-secondary);
+  line-height: 1.6; margin-top: 8px;
+}
+.dimension-peer {
+  font-size: 0.8rem; color: var(--text-secondary);
+  margin-top: 6px;
+}
+
+/* Report radar chart */
+.report-radar {
+  position: relative; width: 100%; max-width: 480px; margin: 0 auto;
+}
+
+/* Report section titles */
+.report-section-title {
+  font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; margin-top: 28px;
+}
+.report-section-intro {
+  font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 16px;
+}
+
+/* Next steps list */
+.next-steps-list {
+  list-style-position: inside; padding-left: 4px;
+  line-height: 2; font-size: 0.95rem;
+}
+.next-steps-list li { margin-bottom: 4px; }
+
+/* AI placeholder */
+.ai-placeholder {
+  border: 2px dashed var(--grey-light);
+  background: var(--bg); box-shadow: none;
+}
+
+/* Report button (in results) */
+.btn-sm {
+  padding: 6px 14px; font-size: 0.8rem; border-radius: 6px;
+}
+
+/* Responsive report */
+@media (max-width: 640px) {
+  .peer-label { min-width: 100px; font-size: 0.8rem; }
+  .peer-row { gap: 8px; }
+  .report-header { padding: 16px 20px; }
+  .dimension-card-header { flex-wrap: wrap; gap: 4px; }
+}
+
 /* Utility */
 .text-center { text-align: center; }
 .mt-8 { margin-top: 8px; }

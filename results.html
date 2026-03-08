@@ -360,6 +360,9 @@
               · ${r.createdAt ? formatDate(r.createdAt) : ''}
             </div>
           </div>
+          <div class="session-actions">
+            <a class="btn btn-outline btn-sm" href="report.html?session=${sessionCode}&id=${r.id}">📄 Bericht</a>
+          </div>
         </div>`;
       }).join('');
     }
