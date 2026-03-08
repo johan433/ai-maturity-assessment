@@ -168,87 +168,79 @@
         ? reportData.respondentName.replace(/[^a-zA-Z0-9äöüÄÖÜß\s-]/g, '').replace(/\s+/g, '_')
         : 'Bericht';
 
-      // --- Build a dedicated PDF container (overlaid on page during capture) ---
-      const pdfRoot = document.createElement('div');
-      pdfRoot.id = 'pdfCapture';
-      pdfRoot.style.cssText = 'position:fixed;left:0;top:0;width:800px;background:white;z-index:99999;font-family:Source Sans 3,sans-serif;color:#231f20;padding:0;';
+      // --- Temporarily modify the page for clean PDF capture ---
+      const siteHeader = document.querySelector('.header');
+      const actions = document.getElementById('reportActions');
+      const aiSection = document.getElementById('aiSection');
+      const reportContent = document.getElementById('reportContent');
+      const canvas = document.getElementById('radarChart');
+      const radarContainer = document.querySelector('.report-radar');
 
-      // 1) PDF Header with logos
+      // 1) Hide site header, action buttons, AI section
+      siteHeader.style.display = 'none';
+      actions.style.display = 'none';
+      if (aiSection) aiSection.style.display = 'none';
+
+      // 2) Add a PDF header with logos at the top of reportContent
       const sessionLabel = document.getElementById('sessionLabel').textContent || '';
-      pdfRoot.innerHTML = `
-        <div style="text-align:center;padding:30px 20px 20px;border-bottom:3px solid #104984;margin-bottom:24px;">
-          <div style="display:flex;align-items:center;justify-content:center;gap:24px;margin-bottom:16px;">
-            <img src="img/praelexis-logo.png" style="height:50px;width:auto;" crossorigin="anonymous">
-            <img src="img/clearit-logo.png" style="height:50px;width:auto;" crossorigin="anonymous">
+      const pdfHeader = document.createElement('div');
+      pdfHeader.id = 'pdfHeader';
+      pdfHeader.innerHTML = `
+        <div style="text-align:center;padding:24px 20px 16px;border-bottom:3px solid #104984;margin-bottom:20px;">
+          <div style="display:flex;align-items:center;justify-content:center;gap:24px;margin-bottom:12px;">
+            <img src="img/praelexis-logo.png" style="height:50px;width:auto;">
+            <img src="img/clearit-logo.png" style="height:50px;width:auto;">
           </div>
-          <div style="font-size:22px;font-weight:700;color:#104984;margin-bottom:4px;">KI-Reifegrad — Individueller Bericht</div>
-          <div style="font-size:13px;color:#666;">${sessionLabel}</div>
+          <div style="font-size:20px;font-weight:700;color:#104984;margin-bottom:4px;">KI-Reifegrad — Individueller Bericht</div>
+          <div style="font-size:12px;color:#666;">${sessionLabel}</div>
         </div>
       `;
+      reportContent.insertBefore(pdfHeader, reportContent.firstChild);
 
-      // 2) Clone report content (without action buttons & AI placeholder)
-      const reportContent = document.getElementById('reportContent');
-      const clone = reportContent.cloneNode(true);
-      clone.classList.remove('hidden');
-      clone.style.display = 'block';
+      // 3) Add footer
+      const pdfFooter = document.createElement('div');
+      pdfFooter.id = 'pdfFooter';
+      pdfFooter.style.cssText = 'text-align:center;padding:16px;margin-top:20px;border-top:1px solid #ddd;font-size:11px;color:#999;';
+      pdfFooter.textContent = '© Praelexis — KI-Reifegrad-Assessment';
+      reportContent.appendChild(pdfFooter);
 
-      // Remove action buttons and AI section from clone
-      const cloneActions = clone.querySelector('#reportActions');
-      if (cloneActions) cloneActions.remove();
-      const cloneAI = clone.querySelector('#aiSection');
-      if (cloneAI) cloneAI.remove();
+      // 4) Replace radar chart canvas with static image
+      const chartImg = document.createElement('img');
+      chartImg.id = 'pdfChartImg';
+      chartImg.src = canvas.toDataURL('image/png', 1.0);
+      chartImg.style.cssText = 'width:100%;max-width:480px;display:block;margin:0 auto;';
+      canvas.style.display = 'none';
+      radarContainer.appendChild(chartImg);
 
-      // 3) Replace the canvas in the clone with a static image
-      const originalCanvas = document.getElementById('radarChart');
-      const cloneCanvas = clone.querySelector('#radarChart');
-      if (originalCanvas && cloneCanvas) {
-        const chartImg = document.createElement('img');
-        chartImg.src = originalCanvas.toDataURL('image/png', 1.0);
-        chartImg.style.cssText = 'width:100%;max-width:480px;display:block;margin:0 auto;';
-        cloneCanvas.parentNode.replaceChild(chartImg, cloneCanvas);
-      }
-
-      // 4) Add page-break hints to cards in clone
-      clone.querySelectorAll('.card, .strength-card, .growth-card, .report-header').forEach(el => {
-        el.style.pageBreakInside = 'avoid';
-        el.style.breakInside = 'avoid';
-      });
-
-      // 5) Add footer
-      const footer = document.createElement('div');
-      footer.style.cssText = 'text-align:center;padding:20px;margin-top:24px;border-top:1px solid #ddd;font-size:11px;color:#999;';
-      footer.textContent = '© Praelexis — KI-Reifegrad-Assessment';
-      clone.appendChild(footer);
-
-      pdfRoot.appendChild(clone);
-      document.body.appendChild(pdfRoot);
-
-      // Small delay to let images load in the clone
-      await new Promise(r => setTimeout(r, 300));
+      // 5) Scroll to top so capture starts at the right place
+      window.scrollTo(0, 0);
+      await new Promise(r => setTimeout(r, 200));
 
       const opt = {
         margin:       [8, 10, 8, 10],
         filename:     `KI-Reifegrad_${safeName}.pdf`,
         image:        { type: 'jpeg', quality: 0.95 },
-        html2canvas:  {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          windowWidth: 800
-        },
+        html2canvas:  { scale: 2, useCORS: true, logging: false },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak:    { mode: ['css', 'legacy'], avoid: ['.card', '.strength-card', '.growth-card', '.report-header', 'tr'] }
       };
 
       try {
-        await html2pdf().set(opt).from(pdfRoot).save();
+        await html2pdf().set(opt).from(reportContent).save();
       } catch (err) {
         console.error('PDF generation failed:', err);
         alert('PDF-Erstellung fehlgeschlagen. Bitte versuchen Sie es erneut.');
       }
 
-      // Clean up
-      document.body.removeChild(pdfRoot);
+      // --- Restore the page ---
+      siteHeader.style.display = '';
+      actions.style.display = '';
+      if (aiSection) aiSection.style.display = '';
+      pdfHeader.remove();
+      pdfFooter.remove();
+      canvas.style.display = '';
+      chartImg.remove();
+
       btn.textContent = originalText;
       btn.disabled = false;
     }
